@@ -1,0 +1,76 @@
+version: '3.5'
+services:
+  api1: # API - Instância 01
+    build: 
+      dockerfile: ./src/main/docker/Dockerfile.jvm
+    image: quarkus-api-pessoa-jvm 
+    hostname: api1
+    depends_on:
+      - db
+    ports:
+      - "8080"
+    #network_mode: "host"
+    environment:
+      DB_URL: postgresql://db:5432/dbPessoas
+      MAX_SIZE: 200
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: '0.5GB'
+
+  api2: # API - Instância 01
+    build:
+      dockerfile: ./src/main/docker/Dockerfile.jvm
+    image: quarkus-api-pessoa-jvm
+    hostname: api2
+    depends_on:
+      - db
+    ports:
+      - "8080"
+    #network_mode: "host"
+    environment:
+      DB_URL: postgresql://db:5432/dbPessoas
+      MAX_SIZE: 200
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: '0.5GB'
+
+  nginx: # Load Balancer
+    image: nginx:latest
+    volumes:
+      - ./nginx-v.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api1
+      - api2
+    ports:
+      - "9999:9999"
+    #network_mode: "host"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: '0.5GB'
+
+  db: # Banco de dados
+    image: postgres
+    ports:
+      - "5432"
+    #network_mode: "host"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: segredo
+      POSTGRES_DB: dbPessoas
+    volumes:
+      - ./init-tbPessoas.sql:/docker-entrypoint-initdb.d/init-tbPessoas.sql:ro
+      - ./postgresql.conf:/docker-entrypoint-initdb.d/postgresql.conf
+    command: postgres -c config_file=/docker-entrypoint-initdb.d/postgresql.conf
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: '1.5GB'
+
+# docker run -p 5432:5432 -v ./init-tbPessoas.sql:/docker-entrypoint-initdb.d/init-tbPessoas.sql:ro -e POSTGRES_PASSWORD=segredo -e POSTGRES_DB=dbPessoas -d postgres

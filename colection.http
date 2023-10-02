@@ -1,0 +1,37 @@
+###
+POST http://localhost:8080/pessoas HTTP/1.1
+content-type: application/json
+
+{
+    "apelido": "olar",
+    "nome": "William",
+    "nascimento": "1987-11-12",
+    "stack": ["java", "cobol"]
+}
+
+###
+GET http://localhost:8080/pessoas/13afbbe4-9870-4828-b74c-234737e63fd9 HTTP/1.1
+Accept: application/json
+
+###
+GET http://localhost:8080/pessoas?t=java HTTP/1.1
+Accept: application/json
+
+###
+GET http://localhost:8080/contagem-pessoas HTTP/1.1
+Accept: text/plain
+
+###
+POST http://localhost/pessoas HTTP/1.1
+content-type: application/json
+
+{
+    "apelido": "teoiyu",
+    "nome": "William",
+    "nascimento": "1987-11-12",
+    "stack": ["java", "cobol"]
+}
+
+###
+GET http://localhost/pessoas/e6f868de-dcd5-4a93-b764-eda0b095a0c0 HTTP/1.1
+Accept: application/json
