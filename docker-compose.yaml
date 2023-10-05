@@ -64,7 +64,7 @@ services:
       POSTGRES_PASSWORD: segredo
       POSTGRES_DB: dbPessoas
     volumes:
-      - ./init-tbPessoas.sql:/docker-entrypoint-initdb.d/init-tbPessoas.sql:ro
+      - ./init-tbPessoas-v.sql:/docker-entrypoint-initdb.d/init-tbPessoas-v.sql:ro
       - ./postgresql.conf:/docker-entrypoint-initdb.d/postgresql.conf
     command: postgres -c config_file=/docker-entrypoint-initdb.d/postgresql.conf
     deploy:
