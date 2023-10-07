@@ -16,7 +16,6 @@ public class PessoaRes {
         p.nome = r.getString("nome");
         p.apelido = r.getString("apelido");
         p.nascimento = r.getString("nascimento");
-
         return p;
     }
 }

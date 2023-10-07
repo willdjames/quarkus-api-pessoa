@@ -22,9 +22,7 @@ public class PessoaResource {
     
     @Inject
     PessoaRepo repo;
-    
-    private static final String PESSOA_TERMO = "SELECT uuid, apelido, nome, nascimento, stack FROM tbPessoas WHERE termo LIKE $1";
-    
+
 
     @POST
     @Path("/pessoas")
@@ -45,13 +43,12 @@ public class PessoaResource {
     @Path("/pessoas/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<Response> pessoasUUID(@PathParam("uuid") String uuid) {
-        //return repo
-        //        .pessoasUUID(uuid)
-        //        .map(pessoa -> Response.status(Status.OK).entity(pessoa).build())
-        //        .onFailure()
-        //        .recoverWithItem(Response.status(Status.NOT_FOUND).build());
-        
-        return Uni.createFrom().item(Response.status(Status.OK).build());
+        return repo
+                .pessoasUUID(uuid)
+                .onItem()
+                .transform(pessoa -> Response.status(Status.OK).entity(pessoa).build())
+                .onFailure()
+                .recoverWithItem(falha -> Response.status(Status.NOT_FOUND).build());
     }
 
     
@@ -60,18 +57,14 @@ public class PessoaResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<Response> pessoasTermo(@QueryParam("t") String termo) {
         if(termo == null) {
-            return Uni.createFrom().item(Response.status(400).build());
+            return Uni.createFrom().item(Response.status(Status.BAD_REQUEST).build());
         }
         
         String n_termo = "%"+termo+"%";
         
-        //return client.preparedQuery(PESSOA_TERMO)
-        //                .execute(Tuple.of(n_termo))
-        //                .onItem().transformToMulti(set -> Multi.createFrom().iterable(set))
-        //                .onItem().transform(PessoaRes::from).map(set -> Response.ok(set).build())
-        //                .toUni();
-
-        return Uni.createFrom().item(Response.status(Status.OK).build());
+        return repo.pessoasTermo(n_termo)
+                    .onItem()
+                    .transform(set -> Response.status(Status.OK).entity(set).build());
     }
 
 
